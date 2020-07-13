@@ -29,7 +29,7 @@ function arrTime(unixTime) {
 // hue changes over 100 seconds
 function timeToColour(time) {
     const l = "80%";
-    const s = "70%";
+    const s = "90%";
 
     const hBaseValue = time[3] * 10 + time[2];
     const h = hBaseValue * 3.6;
@@ -40,6 +40,13 @@ function polarToCartesian(r, theta) {
     return [
         r * Math.cos(theta),
         r * Math.sin(theta)
+    ];
+}
+
+function addC(a, b) {
+    return [
+        a[0] + b[0],
+        a[1] + b[1]
     ];
 }
 
@@ -60,8 +67,8 @@ const easeFunc = (() => {
 // chord movement function based on 1000 seconds
 function moveChord(time) {
     // define a chord
-    const startAngle = (time[3] * 3 + time[4] + time[5]) % 360;
-    const endAngle = (time[3] * 7 + time[4] + time[5])  % 360;
+    const startAngle = (time[3] * 3 + time[4] + time[5] + time[7]) % 360;
+    const endAngle = (time[3] * 7 + time[4] + time[5] + time[7])  % 360;
     
     const r = canvas.height / 4;
     const startCoords = polarToCartesian(r, startAngle);
@@ -73,6 +80,26 @@ function moveChord(time) {
     ];
 
     // move to position along that chord based on 0.1s and 0.01s
+    const movementFraction = easeFunc((time[2] * 10 + time[1]) / 100);
+    return [
+        startCoords[0] + (diffCoords[0] * movementFraction),
+        startCoords[1] + (diffCoords[1] * movementFraction)
+    ];
+}
+
+function moveTangent(time) {
+    const angle = (time[3] * 3 + time[4] * 7 + time[5] + time[7]) % 360;
+    const r = canvas.height / (2 + time[3] + time[4]);
+    
+    const touchCoords = polarToCartesian(r, angle);
+    const startCoords = addC(polarToCartesian(r, (angle + 180) % 360), touchCoords);
+    const endCoords = addC(polarToCartesian(r, (angle + 90) % 360), touchCoords);
+    
+    const diffCoords = [
+        -(startCoords[0] - endCoords[0]),
+        -(startCoords[1] - endCoords[1])
+    ];
+
     const movementFraction = easeFunc((time[2] * 10 + time[1]) / 100);
     return [
         startCoords[0] + (diffCoords[0] * movementFraction),
@@ -137,14 +164,6 @@ for (var i = 0; i < 100; i++) {
 
 function move(time, obj) {
     var relCoords;
-
-    // const nowSecond = Math.floor(Date.now() / 10000);
-    // if (nowSecond % 2 == 0) {
-    //     relCoords = moveChord(time);
-    // }
-    // else {
-    //     relCoords = moveLines(time);
-    // }
     relCoords = moveChord(time);
     obj.x = canvas.width / 2 + relCoords[0];
     obj.y = canvas.height / 2 + relCoords[1];

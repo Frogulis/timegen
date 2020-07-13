@@ -6,10 +6,6 @@
   margin-left: -400px;
 }
 
-#canvas {
-    z-index: -1;
-}
-
 html, body {
     overflow: hidden;
     background: #111;
