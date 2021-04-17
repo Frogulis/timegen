@@ -11,3 +11,11 @@ html, body {
     background: #111;
     color: #ccc;
 }
+
+a:link {
+  color: #ccc;
+}
+
+a:visited {
+  color: #ccc;
+}
