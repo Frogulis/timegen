@@ -154,6 +154,15 @@ var canvas = oCanvas.create({
 });
 
 const objects = [];
+const secondHand = canvas.display.rectangle({
+    width: 15,
+    height: 5,
+    x: canvas.width / 2,
+    y: canvas.height / 2,
+    fill: "#ff0000"
+})
+.setOrigin(0, 200)
+.add();
 
 for (var i = 0; i < 100; i++) {
     const obj = canvas.display.ellipse({
@@ -176,6 +185,9 @@ canvas.setLoop(function() {
         objects[i].fill = timeToColour(fillTime);
         move(posTime, objects[i]);
     }
+    
+    const seconds = new Date().getSeconds();
+    secondHand.rotateTo(seconds * 6);
 });
 
 canvas.timeline.start();
